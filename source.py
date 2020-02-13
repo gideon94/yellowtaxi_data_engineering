@@ -10,12 +10,10 @@ def main():
 
     numbers = list(range(0, 100))
     publisher = Publisher()
-    # with open( TRIPDATA_PATH, "r" ) as zone_data:
-    #     reader = csv.DictReader(zone_data)
-    #     for line in reader:
-    #         publisher.publish( json.dumps(line), '/source')
-    for i in range(10):
-        publisher.publish( str(i), '/source')
+    with open( TRIPDATA_PATH, "r" ) as zone_data:
+        reader = csv.DictReader(zone_data)
+        for line in reader:
+            publisher.publish( json.dumps(line), '/source')
 
     publisher.publish( str('exit'), '/source')
 
