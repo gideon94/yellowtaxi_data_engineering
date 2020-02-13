@@ -1,10 +1,22 @@
-import time
+
+from listener import Listener
 import stomp
-from sub import Listener
+from subscriber import Subscriber
+import time
+
+subscription=None
+class Cleanup_Listener(Listener):
+    def on_message(self, headers, message):
+        print('message:')
+        print(message)
+        if 'exit' in message:
+            subscription.disconnect()
+
 
 def main():
-    conn = stomp.Connection(host_and_ports=[('localhost', '61613')])
-    conn.connect(login='system', passcode='manager', wait=True)
+    global subscription
+    subscription=Subscriber()
+    subscription.subscribe('/source',1,Cleanup_Listener())
 
 if __name__ == '__main__':
     main()
