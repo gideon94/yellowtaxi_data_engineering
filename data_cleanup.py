@@ -7,7 +7,7 @@ import time
 
 def publish_clean_data(message):
     publisher=Publisher()
-    publisher.publish(json.dumps(message), '/topic/preprocess/cleanup')
+    publisher.publish(json.dumps(message), '/queue/preprocess/cleanup')
 
 
 def action(message):
@@ -21,7 +21,7 @@ def action(message):
 
 def main():
     subscription=Subscriber()
-    subscription.subscribe('/source', 1, Listener(subscription,action))
+    subscription.subscribe('/queue/source', 1, Listener(subscription,action))
 
 if __name__ == '__main__':
     main()

@@ -13,7 +13,7 @@ def main():
     with open( TRIPDATA_PATH, "r" ) as zone_data:
         reader = csv.DictReader(zone_data)
         for line in reader:
-            publisher.publish( json.dumps(line), '/source')
+            publisher.publish( json.dumps(line), '/queue/source')
 
     publisher.publish( str('exit'), '/source')
 
