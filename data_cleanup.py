@@ -4,19 +4,13 @@ import stomp
 from subscriber import Subscriber
 import time
 
-subscription=None
-class Cleanup_Listener(Listener):
-    def on_message(self, headers, message):
-        print('message:')
-        print(message)
-        if 'exit' in message:
-            subscription.disconnect()
-
+def action(message):
+    print('message:')
+    print(message)
 
 def main():
-    global subscription
     subscription=Subscriber()
-    subscription.subscribe('/source',1,Cleanup_Listener())
+    subscription.subscribe('/source', 1, Listener(subscription,action))
 
 if __name__ == '__main__':
     main()

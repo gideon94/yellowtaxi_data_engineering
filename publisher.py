@@ -1,7 +1,6 @@
 from connection import create_connection
 
 class Publisher:
-    conn=None
 
     def __init__(self):
         self.conn=create_connection()
