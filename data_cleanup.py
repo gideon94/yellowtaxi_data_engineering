@@ -5,8 +5,9 @@ import stomp
 from subscriber import Subscriber
 import time
 
+publisher=Publisher()
 def publish_clean_data(message):
-    publisher=Publisher()
+    global publisher
     publisher.publish(json.dumps(message), '/queue/preprocess/cleanup')
 
 

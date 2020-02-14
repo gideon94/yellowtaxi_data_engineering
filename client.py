@@ -10,4 +10,5 @@ def action(message):
 def main():
     subscriber=Subscriber()
     #final report after join
-    subscriber.subscribe('/queue/report', 1, Listener(subscriber,action))
+    subscriber.subscribe('/queue/report/day', 4, Listener(subscriber,action))
+    subscriber.subscribe('/queue/report/hour', 5, Listener(subscriber,action))
