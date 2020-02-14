@@ -2,8 +2,6 @@ from connection import create_connection
 import stomp
 
 class Subscriber:
-    conn=None
-    exit=False
     def subscribe(self, destination, id, listener):
         self.conn= create_connection()
         self.conn.set_listener('clean', listener)

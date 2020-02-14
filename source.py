@@ -7,8 +7,6 @@ import stomp
 
 
 def main():
-
-    numbers = list(range(0, 100))
     publisher = Publisher()
     with open( TRIPDATA_PATH, "r" ) as zone_data:
         reader = csv.DictReader(zone_data)
