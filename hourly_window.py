@@ -18,18 +18,11 @@ publisher=Publisher()
 
 def publish_frequency(msg):
     global publisher
-    publisher.publish(json.dumps(msg), '/queue/analytics/hour_window')
+    publisher.publish(json.dumps(msg), '/queue/analytics/hour')
     print(msg)
 
 
 def action(message):
-    # freq_daily = defaultdict(int)
-    # freq_hourly = defaultdict(int)
-    # date_time_obj = datetime.datetime.strptime(message['tpep_pickup_datetime'], '%d-%m-%Y %H:%M:%S')
-    # hour,day = date_time_obj.time().hour,date_time_obj.date().day
-    # freq_hourly[hour] = freq_hourly[hour]+1
-    # freq_daily[day] = freq_hourly[day]+1
-    # freq = {'daily': freq_daily, 'hour' :freq_hourly}
     global current_window
     global current_window_records
     global next_window_records

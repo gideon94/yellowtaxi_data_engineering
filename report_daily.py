@@ -24,12 +24,12 @@ def publish_daily_report(freqs_hourly, current_window):
     peak_windows = [str(window-1) +' - '+ str(window%24) for window in peak_times]
 
     msg={'day': math.ceil(current_window/24), 'peak_times':peak_windows}
-    publisher.publish(json.dumps(msg), '/queue/report/day')
+    publisher.publish(json.dumps(msg), '/topic/report/day')
 
 def publish_hourly_report(peak_zones, trips):
     msg={'peak_zones':peak_zones,'trips':trips}
     #publish to join data with crash table
-    publisher.publish(json.dumps(msg), '/queue/analytics/hour_report')
+    publisher.publish(json.dumps(msg), '/queue/analytics/hour')
 
 def action(message):
     global freqs_hourly

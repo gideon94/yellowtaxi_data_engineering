@@ -5,19 +5,24 @@ from .subscriber import Subscriber
 
 publisher=Publisher()
 
-def publish_report(msg):
+
+def hourly_action(msg):
+    ##publish the hourly results
     publisher.publish(json.dumps(msg), '/queue/report/hour')
+    pass
 
-def action():
-    ##read the crash and location csv
-    ##join with the tables
-    ##publish the results
-
+def daily_action(msg):
+    ##publish the daily results
+    publisher.publish(json.dumps(msg), '/queue/report/day')
     pass
 
 def main():
-    subscription=Subscriber()
-    subscription.subscribe('/queue/analytics/hour_report', 3, Listener(subscription,action))
+    ##read the crash and location csv
+    ##join with the tables
+    hour_subscription=Subscriber()
+    hour_subscription.subscribe('/queue/analytics/hour', 3, Listener(hour_subscription,hourly_action))
+    day_subscription=Subscriber()
+    day_subscription.subscribe('/topic/analytics/hour', 3, Listener(day_subscription,daily_action))
 
 if __name__ == '__main__':
     main()
