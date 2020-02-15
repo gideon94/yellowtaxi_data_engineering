@@ -8,8 +8,8 @@ import stomp
 
 def main():
     publisher = Publisher()
-    with open( TRIPDATA_PATH, "r" ) as zone_data:
-        reader = csv.DictReader(zone_data)
+    with open( TRIPDATA_PATH, "r" ) as trip_data:
+        reader = csv.DictReader(trip_data)
         for line in reader:
             publisher.publish( json.dumps(line), '/queue/source')
 
