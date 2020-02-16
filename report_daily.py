@@ -10,32 +10,31 @@ from subscriber import Subscriber
 freqs_hourly={}
 publisher=Publisher()
 
-def publish_daily_report(freqs_hourly, current_window):
+def publish_daily_report(freqs_hourly):
 
     #calculate peak time
     max_trips=0
     peak_times=[]
-    for window, freq in freqs_hourly.items():
+    for time, freq in freqs_hourly.items():
         check_max = max(max_trips, freq)
-        if(check_max == max_trips):
-            peak_times.append(window)
-        elif():
-            peak_times=[window]
-    peak_windows = [str(window-1) +' - '+ str(window%24) for window in peak_times]
+        if(freq == max_trips):
+            peak_times.append(time)
+        elif(check_max>max_trips):
+            max_trips=check_max
+            peak_times=[time]
 
-    msg={'day': math.ceil(current_window/24), 'peak_times':peak_windows}
+    msg={'peak_times':peak_times, 'trips':max_trips}
     print(msg)
     publisher.publish(json.dumps(msg), '/topic/report/day')
 
-def publish_hourly_report(peak_zones, trips):
-    msg={'peak_zones':peak_zones,'trips':trips}
+def publish_hourly_report(peak_zones, trips, time):
+    msg={'peak_zones':peak_zones,'trips':trips, 'time': time}
     print(msg)
     #publish to join data with crash table
-    publisher.publish(json.dumps(msg), '/queue/analytics/hour')
+    publisher.publish(json.dumps(msg), '/queue/enrich/hour')
 
 def action(message):
     global freqs_hourly
-    print(message)
     #current window frequency
     freq_current=0
     #max freq for current window by zone
@@ -44,22 +43,24 @@ def action(message):
     max_zones=[]
 
     current_window=int(message['window'])
+    current_time=message['time']
 
     for zone, freq in message['zones'].items():
         check_freq=max([freq,max_freq])
-        if(check_freq == max_freq):
+        if(freq == max_freq):
             max_zones.append(zone)
         elif(check_freq>max_freq):
+            max_freq=check_freq
             max_zones=[zone]
         freq_current+=freq
     
-    publish_hourly_report(max_zones,max_freq)
+    publish_hourly_report(max_zones,max_freq,message['time'])
     #add cuurent windows frequency to daily report
-    freqs_hourly['current_window']=freq_current
+    freqs_hourly[current_time]=freq_current
     
     #publish report at the end of the day
-    if(current_window!=0 & current_window%24==0):
-        publish_daily_report(freqs_hourly,current_window)
+    if(current_window!=0 and current_window%24==0):
+        publish_daily_report(freqs_hourly)
         freqs_hourly={}
 
 def main():

@@ -18,7 +18,7 @@ def hourly_action(msg):
 
 def daily_action(msg):
     ##publish the daily results
-    publisher.publish(json.dumps(msg), '/queue/report/day')
+    publisher.publish(json.dumps(msg), '/queue/report/day_accident')
     pass
 
 def main():
@@ -37,7 +37,7 @@ def main():
     
     ##join with the tables
     hour_subscription=Subscriber()
-    hour_subscription.subscribe('/queue/analytics/hour', 3, Listener(hour_subscription,hourly_action))
+    hour_subscription.subscribe('/queue/enrich/hour', 3, Listener(hour_subscription,hourly_action))
     day_subscription=Subscriber()
     day_subscription.subscribe('/topic/analytics/day', 3, Listener(day_subscription,daily_action))
 

@@ -10,8 +10,6 @@ from .subscriber import Subscriber
 def publish_clean_data(message):
     publisher=Publisher()
     publisher.publish(json.dumps(message), '/queue/preprocess/cleanup')
-    print(message)
-
 
 def action(message):
     cleaned={
