@@ -18,7 +18,6 @@ publisher=Publisher()
 
 def publish_frequency(msg):
     global publisher
-    print(msg)
     publisher.publish(json.dumps(msg), '/queue/analytics/hour')
 
 
@@ -32,14 +31,11 @@ def action(message):
 
     pickup_time=datetime.datetime.strptime(message['tpep_pickup_datetime'], '%Y-%m-%d %H:%M:%S')
     drop_time=datetime.datetime.strptime(message['tpep_dropoff_datetime'], '%Y-%m-%d %H:%M:%S')
-
-    #set time for window
-    if current_window_time is None:
-        current_window_time= pickup_time.year pickup_time.month pickup_time.day pickup_time.hour
-
-    print(pickup_time.hour)
     #check if pickup is in current window
     if pickup_time.hour == current_window%24:
+        #set time for window
+        if current_window_time is None:
+            current_window_time= '{:%Y-%m-%d %H:00:00}'.format(pickup_time)
         current_window_records[message['PULocationID']]+=1
 
     #keep records only in current window or next window
@@ -58,11 +54,8 @@ def action(message):
 
     #if 100 records are from the next window 
     #grace time for out of order records
-    print('current : '+str(len(current_window_records)))
-    print('next : ' + str(count_next_window_records))
-    if (count_next_window_records>=100):
+    if (count_next_window_records>=500):
         msg={'window':current_window, 'zones':current_window_records, 'time':current_window_time}
-        print(msg)
         publish_frequency(msg)
         current_window_records=next_window_records
         next_window_records=defaultdict(int)

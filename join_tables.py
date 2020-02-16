@@ -38,6 +38,11 @@ def hourly_action(msg):
 
 def daily_action(msg):
     ##publish the daily results
+<<<<<<< HEAD
+=======
+    publisher.publish(json.dumps(msg), '/queue/report/day_accident')
+    pass
+>>>>>>> b9bd69b78870f31c287b6bec5a0182a064f60305
 
     mvc_df['DATE'] = pd.to_datetime(mvc_df['CRASH DATE'] + ' ' + mvc_df['CRASH TIME'])
     time = datetime.datetime.strptime(time, '%d-%m-%Y %H:%M:%S')
@@ -58,7 +63,7 @@ def main():
     
     ##join with the tables
     hour_subscription=Subscriber()
-    hour_subscription.subscribe('/queue/analytics/hour', 3, Listener(hour_subscription,hourly_action))
+    hour_subscription.subscribe('/queue/enrich/hour', 3, Listener(hour_subscription,hourly_action))
     day_subscription=Subscriber()
     day_subscription.subscribe('/topic/analytics/day', 3, Listener(day_subscription,daily_action))
 
