@@ -11,7 +11,7 @@ freqs_hourly={}
 publisher=Publisher()
 
 def publish_daily_report(freqs_hourly):
-
+    global publisher
     #calculate peak time
     max_trips=0
     peak_times=[]
@@ -28,6 +28,7 @@ def publish_daily_report(freqs_hourly):
     publisher.publish(json.dumps(msg), '/topic/report/day')
 
 def publish_hourly_report(peak_zones, trips, time):
+    global publisher
     msg={'peak_zones':peak_zones,'trips':trips, 'time': time}
     print(msg)
     #publish to join data with crash table
