@@ -2,11 +2,15 @@ from connection import create_connection
 import stomp
 
 class Subscriber:
-    def subscribe(self, destination, id, listener):
+    def __init__(self):
         self.exit=False
         self.conn= create_connection()
-        self.conn.set_listener('clean', listener)
-        self.conn.subscribe(destination=destination, id=id, ack='auto')
+
+    def subscribe(self, destination, name, listener):
+        self.conn.set_listener(name, listener)
+        self.conn.subscribe(destination=destination, id=name, ack='auto')
+
+    def start(self):
         while not self.exit:
             pass
     

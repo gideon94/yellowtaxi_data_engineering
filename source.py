@@ -13,7 +13,7 @@ def main():
         for line in reader:
             publisher.publish( json.dumps(line), '/queue/source')
 
-    publisher.publish( str('exit'), '/source')
+    publisher.publish( str('exit'), '/queue/source')
 
     publisher.disconnect()
 

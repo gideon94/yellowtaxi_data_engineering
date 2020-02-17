@@ -15,19 +15,30 @@ current_window_records=defaultdict(int)
 next_window_records=defaultdict(int)
 count_next_window_records=0
 publisher=Publisher()
+EXIT=False
 
 def publish_frequency(msg):
     global publisher
     publisher.publish(json.dumps(msg), '/queue/analytics/hour')
 
-
 def action(message):
-    
     global current_window
     global current_window_records
     global next_window_records
     global count_next_window_records
     global current_window_time
+    global EXIT
+
+    if message=='exit':
+        msg={'window':current_window, 'zones':current_window_records, 'time':current_window_time}
+        publish_frequency(msg)
+        current_window_time=current_window_time+datetime.timedelta(hours=1)
+        msg={'window':current_window+1, 'zones':next_window_records, 'time':current_window_time}
+        publish_frequency(msg)
+        publisher.publish('exit','/queue/analytics/hour')
+        publisher.disconnect()
+        EXIT=True
+        return
 
     pickup_time=datetime.datetime.strptime(message['tpep_pickup_datetime'], '%Y-%m-%d %H:%M:%S')
     drop_time=datetime.datetime.strptime(message['tpep_dropoff_datetime'], '%Y-%m-%d %H:%M:%S')
@@ -52,7 +63,7 @@ def action(message):
     elif ((((drop_time.day-1)*24)+ drop_time.hour - current_window)==1):
         next_window_records[message['DOLocationID']]+=1
 
-    #if 100 records are from the next window 
+    #if 500 records are from the next window 
     #grace time for out of order records
     if (count_next_window_records>=500):
         msg={'window':current_window, 'zones':current_window_records, 'time':current_window_time}
@@ -64,9 +75,14 @@ def action(message):
         current_window_time=None
         gc.collect()
 
+
 def main():
+    global EXIT
     subscription=Subscriber()
-    subscription.subscribe('/queue/preprocess/cleanup', 2, Listener(subscription,action))
+    subscription.subscribe('/queue/preprocess/cleanup', 'window', Listener(subscription,action))
+    while not EXIT:
+        pass
+    subscription.disconnect()
 
 if __name__ == '__main__':
     main()

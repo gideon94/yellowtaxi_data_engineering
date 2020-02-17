@@ -9,9 +9,11 @@ from subscriber import Subscriber
 #hourly freq for each day
 freqs_hourly={}
 publisher=Publisher()
+EXIT=False
 
 def publish_daily_report(freqs_hourly):
     global publisher
+    global EXIT
     #calculate peak time
     max_trips=0
     peak_times=[]
@@ -26,6 +28,10 @@ def publish_daily_report(freqs_hourly):
     msg={'peak_times':peak_times, 'trips':max_trips}
     print(msg)
     publisher.publish(json.dumps(msg), '/topic/report/day')
+    if EXIT:
+        publisher.publish('exit','/queue/enrich/hour')
+        publisher.publish('exit','/topic/report/day')
+        publisher.disconnect()
 
 def publish_hourly_report(peak_zones, trips, time):
     global publisher
@@ -35,6 +41,7 @@ def publish_hourly_report(peak_zones, trips, time):
     publisher.publish(json.dumps(msg), '/queue/enrich/hour')
 
 def action(message):
+    global EXIT
     global freqs_hourly
     #current window frequency
     freq_current=0
@@ -42,6 +49,11 @@ def action(message):
     max_freq=0
     #busiest zone in current window
     max_zones=[]
+
+    if(message=='exit'):
+        EXIT=True
+        publish_daily_report(freqs_hourly)
+        return
 
     current_window=int(message['window'])
     current_time=message['time']
@@ -65,8 +77,11 @@ def action(message):
         freqs_hourly={}
 
 def main():
+    global EXIT
     subscription=Subscriber()
-    subscription.subscribe('/queue/analytics/hour', 2, Listener(subscription,action))
+    subscription.subscribe('/queue/analytics/hour', 'report_', Listener(subscription,action))
+    while not EXIT:
+        pass
 
 if __name__ == '__main__':
     main()
