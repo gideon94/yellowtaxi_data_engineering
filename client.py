@@ -29,7 +29,6 @@ def hour_action(message,lock):
         print('Borough : ' + loc['Borough']+','+ loc['Zone'])
         print('taxis : ' + str(message['freq']))
     lock.release()
-    return
 
 def day_action(message,lock):
     global exit_count
@@ -44,9 +43,8 @@ def day_action(message,lock):
         start=datetime.datetime.strptime(time, '%Y-%m-%d %H:%M:%S')
         end=start + datetime.timedelta(hours=1)
         end='{:%Y-%m-%d %H:00:00}'.format(end)
-        print(start+' - '+end+'   '+ 'taxis : ' + str(message['trips']))
+        print(time+' - '+end+'   '+ 'taxis : ' + str(message['trips']))
     lock.release()
-    return
 
 def acch_action(message,lock):
     #print in required format
@@ -63,7 +61,6 @@ def acch_action(message,lock):
         print('Reason:')
         print(acc['CONTRIBUTING FACTOR VEHICLE 1'])
     lock.release()
-    return
 
 def accd_action(message,lock):
     global exit_count
@@ -81,7 +78,6 @@ def accd_action(message,lock):
         print('Reason:')
         print(acc['CONTRIBUTING FACTOR VEHICLE 1'])
     lock.release()
-    return
 
 def weather_action(message,lock):
     #print in required format
@@ -94,7 +90,6 @@ def weather_action(message,lock):
     print('Temperature:' +str(message['main']['temp']) +'F' + ' Feels like:' + str(message['main']['feels_like']) +'F')
     print('Wind speed:'+ str(message['wind']['speed']) + 'mph')
     lock.release()
-    return
 
 def main():
     hour_subscription=Subscriber()
@@ -112,5 +107,6 @@ def main():
 
     while not exit_count==4:
         pass
+    
 if __name__ == '__main__':
     main()
