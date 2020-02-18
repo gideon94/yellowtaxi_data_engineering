@@ -8,6 +8,7 @@ from collections import Counter
 from listener import Listener
 from publisher import Publisher
 from subscriber import Subscriber
+import threading
 
 current_window_time=None
 current_window=0
@@ -79,7 +80,12 @@ def action(message):
 def main():
     global EXIT
     subscription=Subscriber()
-    subscription.subscribe('/queue/preprocess/cleanup', 'window', Listener(subscription,action))
+    subscription.subscribe('/queue/source', 'window', Listener(subscription,action))
+    threads = []
+    for i in range(4):
+        t = threading.Thread(target=action)
+        threads.append(t)
+        t.start()
     while not EXIT:
         pass
     subscription.disconnect()

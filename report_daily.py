@@ -26,19 +26,17 @@ def publish_daily_report(freqs_hourly):
             peak_times=[time]
 
     msg={'peak_times':peak_times, 'trips':max_trips}
-    print(msg)
     publisher.publish(json.dumps(msg), '/topic/report/day')
     if EXIT:
-        publisher.publish('exit','/queue/enrich/hour')
+        publisher.publish('exit','/topic/enrich/hour')
         publisher.publish('exit','/topic/report/day')
         publisher.disconnect()
 
 def publish_hourly_report(peak_zones, trips, time):
     global publisher
     msg={'peak_zones':peak_zones,'trips':trips, 'time': time}
-    print(msg)
     #publish to join data with crash table
-    publisher.publish(json.dumps(msg), '/queue/enrich/hour')
+    publisher.publish(json.dumps(msg), '/topic/enrich/hour')
 
 def action(message):
     global EXIT
