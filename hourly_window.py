@@ -92,7 +92,7 @@ def action(message):
         count_next_window_records=0
         current_window+=1
         current_window_time=0
-        gc.collect()
+        #gc.collect()
 
 
 def main():
