@@ -12,7 +12,7 @@ from subscriber import Subscriber
 from multiprocessing import Process
 from multiprocessing.pool import ThreadPool as Pool
 
-current_window_time=''
+current_window_time='2018-01-01 00:00:00'
 current_window=0
 current_window_records=[]
 next_window_records=[]
@@ -29,7 +29,7 @@ class ThreadSubscriber(Subscriber):
 
 def publish_frequency(msg):
     global publisher
-    publisher.publish(json.dumps(msg), '/queue/analytics/hour')
+    publisher.publish(json.dumps(msg), '/queue/batch/hour')
 
 def action(message):
     global current_window
@@ -56,28 +56,21 @@ def action(message):
     drop_day=int(message['tpep_dropoff_datetime'][8:10])
 
     if pickup_hour == current_window%24:
-        #set time for window
-        # if current_window_time == 0:
-        #     #current_window_time= '{:%Y-%m-%d %H:00:00}'.format(pickup_time)
-        #     current_window_time= message['tpep_pickup_datetime'][0:13]+':00:00'
-        current_window_records.append({message['PULocationID']:1})
+        current_window_records.append(message['PULocationID'])
 
     #keep records only in current window or next window
     #check if pickup is in next window
-    #elif ((((pickup_time.day-1)*24)+ pickup_time.hour - current_window)==1):
-    elif ((((pickup_day-1)*24)+ pickup_hour - current_window)==1):
+    if ((((pickup_day-1)*24)+ pickup_hour - current_window)==1):
         count_next_window_records+=1
-        next_window_records.append({message['DOLocationID']:1})
+        next_window_records.append(message['DOLocationID'])
         
     #check if pickup is in current window
-    #if drop_time.hour == current_window%24:
     if drop_hour == current_window%24:
-        current_window_records.append({message['DOLocationID']:1})
+        current_window_records.append(message['DOLocationID'])
     
     #check if pickup is in next window
-    #elif ((((drop_time.day-1)*24)+ drop_time.hour - current_window)==1):
-    elif ((((drop_day-1)*24)+ drop_hour - current_window)==1):
-        next_window_records.append({message['DOLocationID']:1})
+    if ((((drop_day-1)*24)+ drop_hour - current_window)==1):
+        next_window_records.append(message['DOLocationID'])
 
     #if 500 records are from the next window 
     #grace time for out of order records
