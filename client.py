@@ -111,7 +111,7 @@ def main():
     #final report after join
 
     hour_subscription.subscribe(
-        '/queue/report/hour', 'report_hour', ClientListener(hour_subscription, hour_action))
+    '/queue/report/hour', 'report_hour', ClientListener(hour_subscription, hour_action))
     day_subscription.subscribe(
         '/topic/report/day', 'report_day', ClientListener(day_subscription, day_action))
     acc_subscription_hour.subscribe(

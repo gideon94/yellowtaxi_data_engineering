@@ -66,7 +66,7 @@ def action(message):
         freq_current+=freq
     
     publish_hourly_report(max_zones,max_freq,message['time'])
-    #add cuurent windows frequency to daily report
+    #add current windows frequency to daily report
     freqs_hourly[current_time]=freq_current
     
     #publish report at the end of the day
@@ -77,9 +77,10 @@ def action(message):
 def main():
     global EXIT
     subscription=Subscriber()
-    subscription.subscribe('/queue/analytics/hour', 'report_', Listener(subscription,action))
+    subscription.subscribe('/queue/count', 'report_', Listener(subscription,action))
     while not EXIT:
         pass
+    subscription.disconnect()
 
 if __name__ == '__main__':
     main()
