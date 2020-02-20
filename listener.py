@@ -2,11 +2,12 @@
 import json
 import stomp
 
+
 class Listener(stomp.ConnectionListener):
 
-    def __init__(self,subscriber,action):
-        self.subscriber=subscriber
-        self.action=action
+    def __init__(self, subscriber, action):
+        self.subscriber = subscriber
+        self.action = action
 
     def on_error(self, headers, message):
         print('received an error "%s"' % message)

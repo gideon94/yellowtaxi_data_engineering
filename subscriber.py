@@ -1,10 +1,11 @@
 from connection import create_connection
 import stomp
 
+
 class Subscriber:
     def __init__(self):
-        self.exit=False
-        self.conn= create_connection()
+        self.exit = False
+        self.conn = create_connection()
 
     def subscribe(self, destination, name, listener):
         self.conn.set_listener(name, listener)
@@ -13,7 +14,7 @@ class Subscriber:
     def start(self):
         while not self.exit:
             pass
-    
+
     def disconnect(self):
-        self.exit=True
+        self.exit = True
         self.conn.disconnect()

@@ -6,7 +6,6 @@ from subscriber import Subscriber
 
 exit_count = 0
 
-
 class ClientListener(Listener):
     def on_message(self, headers, message):
         if 'exit' in message:
@@ -103,15 +102,15 @@ def weather_action(message, lock):
 
 
 def main():
+    # make necessary subscriptions
     hour_subscription = Subscriber()
     day_subscription = Subscriber()
     acc_subscription_hour = Subscriber()
     acc_subscription_day = Subscriber()
     weather_subscription = Subscriber()
-    #final report after join
 
     hour_subscription.subscribe(
-    '/queue/report/hour', 'report_hour', ClientListener(hour_subscription, hour_action))
+        '/queue/report/hour', 'report_hour', ClientListener(hour_subscription, hour_action))
     day_subscription.subscribe(
         '/topic/report/day', 'report_day', ClientListener(day_subscription, day_action))
     acc_subscription_hour.subscribe(
@@ -121,9 +120,15 @@ def main():
     weather_subscription.subscribe(
         '/queue/report/weather', 'weather_', ClientListener(weather_subscription, weather_action))
 
+    #all publishers disconnect end subscription
     while not exit_count == 4:
         pass
 
+    hour_subscription.disconnect()
+    day_subscription.disconnect()
+    acc_subscription_hour.disconnect()
+    acc_subscription_day.disconnect()
+    weather_subscription.disconnect()
 
 if __name__ == '__main__':
     main()
